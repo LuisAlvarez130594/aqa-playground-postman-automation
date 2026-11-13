@@ -1,0 +1,30 @@
+# Postman local workspace files
+.postman/
+postman/
+
+# Local environment and secret files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Node.js dependencies and logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~

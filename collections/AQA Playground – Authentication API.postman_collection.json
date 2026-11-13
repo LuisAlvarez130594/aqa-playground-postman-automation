@@ -1,0 +1,735 @@
+{
+  "info": {
+    "_postman_id": "807ef0a9-49ab-4e7b-bdce-4fd83c3beffd",
+    "name": "AQA Playground – Authentication API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54395909",
+    "_collection_link": "https://go.postman.co/collection/54395909-807ef0a9-49ab-4e7b-bdce-4fd83c3beffd?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 - Sign Up - Valid",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const timestamp = Date.now().toString();\r\nconst suffix = timestamp.slice(-8);\r\n\r\npm.environment.set(\"testEmail\", `qa.postman.${timestamp}@example.com`);\r\npm.environment.set(\"testUsername\", `qa${suffix}`);\r\npm.environment.set(\"testPassword\", `Qa${suffix}!`);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    const contentType = pm.response.headers.get(\"Content-Type\");\r\n    pm.expect(contentType).to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Access token is present\", function () {\r\n    pm.expect(response.accessToken).to.be.a(\"string\").and.not.empty;\r\n});\r\n\r\npm.test(\"Refresh token is present\", function () {\r\n    pm.expect(response.refreshToken).to.be.a(\"string\").and.not.empty;\r\n});\r\n\r\nif (pm.response.code === 201) {\r\n    pm.environment.set(\"accessToken\", response.accessToken);\r\n    pm.environment.set(\"refreshToken\", response.refreshToken);\r\n}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{testUsername}}\",\r\n  \"password\": \"{{testPassword}}\",\r\n  \"email\": \"{{testEmail}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/signup",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "signup"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:9090/auth/signup' \\\r\n  -H 'accept: application/json' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"username\": \"string\",\r\n  \"password\": \"string\",\r\n  \"email\": \"string\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Login - Invalid Password",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();\r\n\r\npm.test(\"Status code is 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    const contentType = pm.response.headers.get(\"Content-Type\");\r\n    pm.expect(contentType).to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Generic authentication error is returned\", function () {\r\n    pm.expect(response.message).to.eql(\"Unauthorized\");\r\n});\r\n\r\npm.test(\"Access token is not returned\", function () {\r\n    pm.expect(response).to.not.have.property(\"accessToken\");\r\n});\r\n\r\npm.test(\"Refresh token is not returned\", function () {\r\n    pm.expect(response).to.not.have.property(\"refreshToken\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{testUsername}}\",\r\n  \"password\": \"{{testPassword}}x\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:9090/auth/login' \\\r\n  -H 'accept: application/json' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"username\": \"string\",\r\n  \"password\": \"string\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Login - Unknown User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();\r\n\r\npm.test(\"Status code is 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    const contentType = pm.response.headers.get(\"Content-Type\");\r\n    pm.expect(contentType).to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Generic authentication error is returned\", function () {\r\n    pm.expect(response.message).to.eql(\"Unauthorized\");\r\n});\r\n\r\npm.test(\"Access token is not returned\", function () {\r\n    pm.expect(response).to.not.have.property(\"accessToken\");\r\n});\r\n\r\npm.test(\"Refresh token is not returned\", function () {\r\n    pm.expect(response).to.not.have.property(\"refreshToken\");\r\n});"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const suffix = Date.now().toString().slice(-8);\r\npm.environment.set(\"unknownUsername\", `zz${suffix}`);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"{{unknownUsername}}\",\r\n    \"password\": \"{{testPassword}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:9090/auth/login' \\\r\n  -H 'accept: application/json' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"username\": \"string\",\r\n  \"password\": \"string\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Login - Valid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const jsonData = pm.response.json();\r\n\r\npm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    pm.expect(\r\n        pm.response.headers.get(\"Content-Type\")\r\n    ).to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Access token is present\", function () {\r\n    pm.expect(jsonData.accessToken).to.be.a(\"string\").and.not.empty;\r\n});\r\n\r\npm.test(\"Refresh token is present\", function () {\r\n    pm.expect(jsonData.refreshToken).to.be.a(\"string\").and.not.empty;\r\n});\r\n\r\npm.test(\"Access token has valid JWT structure\", function () {\r\n    pm.expect(jsonData.accessToken.split(\".\")).to.have.lengthOf(3);\r\n});\r\n\r\npm.test(\"Refresh token has valid JWT structure\", function () {\r\n    pm.expect(jsonData.refreshToken.split(\".\")).to.have.lengthOf(3);\r\n});\r\n\r\nif (pm.response.code === 201) {\r\n    pm.environment.set(\"accessToken\", jsonData.accessToken);\r\n    pm.environment.set(\"refreshToken\", jsonData.refreshToken);\r\n}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{testUsername}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:9090/auth/login' \\\r\n  -H 'accept: application/json' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"username\": \"string\",\r\n  \"password\": \"string\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "09 - Get Current User - Without Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const jsonData = pm.response.json();\r\n\r\npm.test(\"Status code is 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Status code in body is 401\", function () {\r\n    pm.expect(jsonData.statusCode).to.eql(401);\r\n});\r\n\r\npm.test(\"Message is Unauthorized\", function () {\r\n    pm.expect(jsonData.message).to.eql(\"Unauthorized\");\r\n});\r\n\r\npm.test(\"Access token is not returned\", function () {\r\n    pm.expect(jsonData).to.not.have.property(\"accessToken\");\r\n});\r\n\r\npm.test(\"User information is not exposed\", function () {\r\n    pm.expect(jsonData).to.not.have.any.keys(\r\n        \"accountId\",\r\n        \"email\",\r\n        \"username\",\r\n        \"password\"\r\n    );\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "me"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'GET' \\\r\n  'http://localhost:9090/users/me' \\\r\n  -H 'accept: application/json'"
+      },
+      "response": []
+    },
+    {
+      "name": "10 - Get Current User - Valid Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const jsonData = pm.response.json();\r\nconst expectedUsername = pm.environment.get(\"testUsername\");\r\n\r\npm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Response body is an object\", function () {\r\n    pm.expect(jsonData).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"Response contains username\", function () {\r\n    pm.expect(jsonData).to.have.property(\"username\");\r\n});\r\n\r\npm.test(\"Username is not empty\", function () {\r\n    pm.expect(jsonData.username).to.be.a(\"string\").and.not.be.empty;\r\n});\r\n\r\npm.test(\"Username matches authenticated user\", function () {\r\n    pm.expect(jsonData.username).to.eql(expectedUsername);\r\n});\r\n\r\npm.test(\"Sensitive information is not exposed\", function () {\r\n    pm.expect(jsonData).to.not.have.any.keys(\r\n        \"password\",\r\n        \"accessToken\",\r\n        \"refreshToken\"\r\n    );\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "me"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'GET' \\\r\n  'http://localhost:9090/users/me' \\\r\n  -H 'accept: application/json'"
+      },
+      "response": []
+    },
+    {
+      "name": "11 - Get Current User - Invalid Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const jsonData = pm.response.json();\r\n\r\npm.test(\"Status code is 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Status code in body is 401\", function () {\r\n    pm.expect(jsonData.statusCode).to.eql(401);\r\n});\r\n\r\npm.test(\"Message is Unauthorized\", function () {\r\n    pm.expect(jsonData.message).to.eql(\"Unauthorized\");\r\n});\r\n\r\npm.test(\"Modified access token is rejected\", function () {\r\n    pm.expect(pm.response.code).to.eql(401);\r\n});\r\n\r\npm.test(\"Username is not exposed\", function () {\r\n    pm.expect(jsonData).to.not.have.property(\"username\");\r\n});\r\n\r\npm.test(\"Sensitive information is not returned\", function () {\r\n    pm.expect(jsonData).to.not.have.any.keys(\r\n        \"password\",\r\n        \"accessToken\",\r\n        \"refreshToken\"\r\n    );\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}x",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "me"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'GET' \\\r\n  'http://localhost:9090/users/me' \\\r\n  -H 'accept: application/json'"
+      },
+      "response": []
+    },
+    {
+      "name": "06 - Refresh Token - Invalid",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const validRefreshToken = pm.environment.get(\"refreshToken\");\r\n\r\nif (!validRefreshToken) {\r\n    throw new Error(\"No existe refreshToken en el ambiente\");\r\n}\r\n\r\npm.variables.set(\r\n    \"invalidRefreshToken\",\r\n    `${validRefreshToken}x`\r\n);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();\r\n\r\npm.test(\"Status code is 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    const contentType = pm.response.headers.get(\"Content-Type\");\r\n    pm.expect(contentType).to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Response statusCode is 401\", function () {\r\n    pm.expect(response.statusCode).to.eql(401);\r\n});\r\n\r\npm.test(\"Error is Unauthorized\", function () {\r\n    pm.expect(response.error).to.eql(\"Unauthorized\");\r\n});\r\n\r\npm.test(\"Message indicates invalid refresh token\", function () {\r\n    pm.expect(response.message).to.eql(\"Invalid refresh token\");\r\n});\r\n\r\npm.test(\"Tokens are not returned\", function () {\r\n    pm.expect(response).to.not.have.property(\"accessToken\");\r\n    pm.expect(response).to.not.have.property(\"refreshToken\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"refreshToken\": \"{{invalidRefreshToken}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9090/auth/refresh",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9090",
+          "path": [
+            "auth",
+            "refresh"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:9090/auth/refresh' \\\r\n  -H 'accept: application/json' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"refreshToken\": \"string\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Refresh Token - Valid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();\r\nconst previousAccessToken =\r\n    pm.environment.get(\"accessTokenBeforeRefresh\");\r\n\r\npm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    const contentType = pm.response.headers.get(\"Content-Type\");\r\n    pm.expect(contentType).to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Access token is present\", function () {\r\n    pm.expect(response.accessToken).to.be.a(\"string\").and.not.empty;\r\n});\r\n\r\npm.test(\"Refresh token is present\", function () {\r\n    pm.expect(response.refreshToken).to.be.a(\"string\").and.not.empty;\r\n});\r\n\r\npm.test(\"Access token has JWT format\", function () {\r\n    pm.expect(response.accessToken.split(\".\")).to.have.lengthOf(3);\r\n});\r\n\r\npm.test(\"Refresh token has JWT format\", function () {\r\n    pm.expect(response.refreshToken.split(\".\")).to.have.lengthOf(3);\r\n});\r\n\r\npm.test(\"Access token has valid JWT structure\", function () {\r\n    const jsonData = pm.response.json();\r\n\r\n    pm.expect(jsonData.accessToken).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(jsonData.accessToken.split(\".\")).to.have.lengthOf(3);\r\n});\r\n\r\nif (\r\n    pm.response.code === 201 &&\r\n    response.accessToken &&\r\n    response.refreshToken\r\n) {\r\n    pm.environment.set(\"accessToken\", response.accessToken);\r\n    pm.environment.set(\"refreshToken\", response.refreshToken);\r\n}"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const currentAccessToken = pm.environment.get(\"accessToken\");\r\nconst currentRefreshToken = pm.environment.get(\"refreshToken\");\r\n\r\nif (!currentRefreshToken) {\r\n    throw new Error(\"No existe refreshToken en el ambiente\");\r\n}\r\n\r\npm.environment.set(\"accessTokenBeforeRefresh\", currentAccessToken);\r\npm.environment.set(\"refreshTokenBeforeRefresh\", currentRefreshToken);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/refresh",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "refresh"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:9090/auth/refresh' \\\r\n  -H 'accept: application/json' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"refreshToken\": \"string\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "07 - Logout - Valid",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const accessToken = pm.environment.get(\"accessToken\");\r\nconst refreshToken = pm.environment.get(\"refreshToken\");\r\n\r\nif (!accessToken || !refreshToken) {\r\n    throw new Error(\"No existen tokens válidos en el ambiente\");\r\n}\r\n\r\npm.environment.set(\"loggedOutAccessToken\", accessToken);\r\npm.environment.set(\"loggedOutRefreshToken\", refreshToken);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Response body is empty\", function () {\r\n    pm.expect(pm.response.text().trim()).to.eql(\"\");\r\n});\r\n\r\nif (pm.response.code === 201) {\r\n    pm.environment.unset(\"accessToken\");\r\n    pm.environment.unset(\"refreshToken\");\r\n}\r\n\r\npm.test(\"Access token was removed from environment\", function () {\r\n    pm.expect(pm.environment.get(\"accessToken\")).to.be.undefined;\r\n});\r\n\r\npm.test(\"Refresh token was removed from environment\", function () {\r\n    pm.expect(pm.environment.get(\"refreshToken\")).to.be.undefined;\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/logout",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "logout"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:9090/auth/logout' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"refreshToken\": \"string\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "08 - Refresh Token - After Logout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const jsonData = pm.response.json();\r\n\r\npm.test(\"Status code is 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\npm.test(\"Response is JSON\", function () {\r\n    pm.expect(\r\n        pm.response.headers.get(\"Content-Type\")\r\n    ).to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"Response time is under 2000 ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\npm.test(\"Status code in body is 401\", function () {\r\n    pm.expect(jsonData.statusCode).to.eql(401);\r\n});\r\n\r\npm.test(\"Error is Unauthorized\", function () {\r\n    pm.expect(jsonData.error).to.eql(\"Unauthorized\");\r\n});\r\n\r\npm.test(\"No access token is returned\", function () {\r\n    pm.expect(jsonData).to.not.have.property(\"accessToken\");\r\n});\r\n\r\npm.test(\"No refresh token is returned\", function () {\r\n    pm.expect(jsonData).to.not.have.property(\"refreshToken\");\r\n});\r\n\r\npm.test(\"Revoked refresh token is rejected\", function () {\r\n    pm.expect(jsonData.message).to.eql(\"Invalid refresh token\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{loggedOutAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"refreshToken\": \"{{loggedOutRefreshToken}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/refresh",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "refresh"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:9090/auth/logout' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"refreshToken\": \"string\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "12 - Get Current User - Expired Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const decodeBase64 = require(\"atob\");\r",
+              "\r",
+              "const jsonData = pm.response.json();\r",
+              "const token = pm.environment.get(\"expiredAccessToken\");\r",
+              "\r",
+              "const tokenParts = token.split(\".\");\r",
+              "const base64Payload = tokenParts[1]\r",
+              "    .replace(/-/g, \"+\")\r",
+              "    .replace(/_/g, \"/\");\r",
+              "\r",
+              "const paddedPayload =\r",
+              "    base64Payload + \"=\".repeat((4 - (base64Payload.length % 4)) % 4);\r",
+              "\r",
+              "const tokenPayload = JSON.parse(decodeBase64(paddedPayload));\r",
+              "const currentUnixTime = Math.floor(Date.now() / 1000);\r",
+              "\r",
+              "pm.test(\"Stored access token exists\", function () {\r",
+              "    pm.expect(token).to.be.a(\"string\").and.not.be.empty;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Access token has valid JWT structure\", function () {\r",
+              "    pm.expect(tokenParts).to.have.lengthOf(3);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Access token contains expiration date\", function () {\r",
+              "    pm.expect(tokenPayload).to.have.property(\"exp\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Access token is expired\", function () {\r",
+              "    pm.expect(tokenPayload.exp).to.be.below(currentUnixTime);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Status code is 401\", function () {\r",
+              "    pm.response.to.have.status(401);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response is JSON\", function () {\r",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+              "        .to.include(\"application/json\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Status code in body is 401\", function () {\r",
+              "    pm.expect(jsonData.statusCode).to.eql(401);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Message is Unauthorized\", function () {\r",
+              "    pm.expect(jsonData.message).to.eql(\"Unauthorized\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response time is under 2000 ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Username is not exposed\", function () {\r",
+              "    pm.expect(jsonData).to.not.have.property(\"username\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Sensitive information is not returned\", function () {\r",
+              "    pm.expect(jsonData).to.not.have.any.keys(\r",
+              "        \"password\",\r",
+              "        \"accessToken\",\r",
+              "        \"refreshToken\"\r",
+              "    );\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// JWT vencido para el entorno local\r",
+              "const expiredAccessToken = [\r",
+              "    \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\",\r",
+              "    \"eyJzdWIiOjEsInVzZXJuYW1lIjoiZXhwaXJlZF90ZXN0X3VzZXIiLCJpYXQiOjE2MDk0NTkyMDAsImV4cCI6MTYwOTQ2MjgwMH0\",\r",
+              "    \"mJd1HaGOM5BEOTtMyO2BAHC3-klsI6Kv9ZkTzshu-2s\"\r",
+              "].join(\".\");\r",
+              "\r",
+              "pm.environment.set(\"expiredAccessToken\", expiredAccessToken);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{expiredAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "me"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'GET' \\\r\n  'http://localhost:9090/users/me' \\\r\n  -H 'accept: application/json'"
+      },
+      "response": []
+    }
+  ]
+}
