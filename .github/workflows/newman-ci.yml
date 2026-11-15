@@ -1,0 +1,129 @@
+name: AQA Playground - Postman API Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "collections/**"
+      - "environments/**"
+      - ".github/workflows/newman-ci.yml"
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  newman-api-tests:
+    name: Run Newman authentication tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Postman tests
+        uses: actions/checkout@v5
+
+      - name: Checkout AQA Playground
+        uses: actions/checkout@v5
+        with:
+          repository: LuisAlvarez130594/aqa-playground
+          ref: main
+          path: aqa-playground
+
+      - name: Create temporary test configuration
+        working-directory: aqa-playground
+        run: |
+          cat > packages/backend/.env.production <<'EOF'
+          POSTGRES_USER=aqa_ci
+          POSTGRES_PASSWORD=aqa_ci_password
+          POSTGRES_DB=aqa
+          PGADMIN_DEFAULT_EMAIL=ci@example.com
+          PGADMIN_DEFAULT_PASSWORD=aqa_ci_password
+          DB_HOST=postgres
+          DB_LOGGING=false
+          DB_NAME=aqa
+          DB_PASSWORD=aqa_ci_password
+          DB_PORT=5432
+          DB_SYNC=true
+          DB_USERNAME=aqa_ci
+          JWT_SECRET=github_actions_test_secret
+          PORT=9090
+          CORS_WHITELIST=http://localhost:3000
+          STRIPE_API_SECRET_KEY=sk_test_placeholder
+          EOF
+
+          cat > packages/frontend/.env.production <<'EOF'
+          VITE_REACT_APP_BE_URL=/api
+          VITE_REACT_APP_STRIPE_PUB_KEY=pk_test_placeholder
+          EOF
+
+      - name: Start AQA Playground with Docker
+        working-directory: aqa-playground
+        run: docker compose -f docker-compose.prod.yml up -d --build
+
+      - name: Wait for the API
+        working-directory: aqa-playground
+        run: |
+          for attempt in {1..60}; do
+            if curl --fail --silent http://localhost:9090/api > /dev/null; then
+              echo "AQA Playground API is ready"
+              exit 0
+            fi
+
+            echo "Waiting for the API: attempt $attempt of 60"
+            sleep 5
+          done
+
+          echo "The API did not start"
+          docker compose -f docker-compose.prod.yml ps
+          docker compose -f docker-compose.prod.yml logs --no-color
+          exit 1
+
+      - name: Install Newman
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Newman packages
+        run: npm install --global newman@6 newman-reporter-htmlextra@1
+
+      - name: Run Postman collection
+        run: |
+          COLLECTION="$(find collections -name '*.postman_collection.json' -print -quit)"
+          ENVIRONMENT="$(find environments -name '*.postman_environment.json' -print -quit)"
+
+          test -n "$COLLECTION" || { echo "Postman collection not found"; exit 1; }
+          test -n "$ENVIRONMENT" || { echo "Postman environment not found"; exit 1; }
+
+          mkdir -p reports
+
+          newman run "$COLLECTION" \
+            --environment "$ENVIRONMENT" \
+            --env-var "baseUrl=http://localhost:9090" \
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export "reports/AQA_Playground_Authentication_Report.html" \
+            --reporter-htmlextra-title "AQA Playground Authentication API"
+
+      - name: Show Docker logs if tests fail
+        if: failure()
+        working-directory: aqa-playground
+        run: |
+          docker compose -f docker-compose.prod.yml ps
+          docker compose -f docker-compose.prod.yml logs --no-color --tail=200
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-html-report
+          path: reports/AQA_Playground_Authentication_Report.html
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Stop AQA Playground
+        if: always()
+        working-directory: aqa-playground
+        run: docker compose -f docker-compose.prod.yml down -v
