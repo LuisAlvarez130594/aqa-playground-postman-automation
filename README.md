@@ -1,6 +1,12 @@
 # AQA Playground – Authentication API Automation
 
-[![AQA Playground - Postman API Tests](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml/badge.svg)](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml)
+[!\[AQA Playground - Postman API Tests](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml/badge.svg)](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml)
+
+
+
+\[📊 Ver reporte HTML público](https://luisalvarez130594.github.io/aqa-playground-postman-automation/reports/AQA\_Playground\_Authentication\_Report.html)
+
+
 
 Proyecto de automatización de pruebas para los endpoints de autenticación de [AQA Playground](https://github.com/LuisAlvarez130594/aqa-playground), implementado con Postman, ejecutado con Newman e integrado con GitHub Actions.
 
@@ -8,35 +14,35 @@ Proyecto de automatización de pruebas para los endpoints de autenticación de [
 
 Validar automáticamente los flujos positivos y negativos de autenticación, incluyendo:
 
-- Registro de usuarios.
-- Inicio de sesión.
-- Renovación de tokens.
-- Cierre de sesión.
-- Consulta del usuario autenticado.
-- Validación de acceso mediante JWT.
-- Escenarios con usuarios desconocidos, tokens cerrados y tokens expirados.
+* Registro de usuarios.
+* Inicio de sesión.
+* Renovación de tokens.
+* Cierre de sesión.
+* Consulta del usuario autenticado.
+* Validación de acceso mediante JWT.
+* Escenarios con usuarios desconocidos, tokens cerrados y tokens expirados.
 
 ## Tecnologías
 
-| Tecnología | Uso dentro del proyecto |
-|---|---|
-| Postman | Diseño de requests, variables y pruebas de API |
-| JavaScript | Validaciones y manejo dinámico de datos y tokens |
-| Newman | Ejecución de la colección desde línea de comandos |
-| htmlextra | Generación del reporte HTML |
-| Docker Compose | Creación temporal del ambiente AQA Playground |
-| GitHub Actions | Ejecución automática de las pruebas en la nube |
+|Tecnología|Uso dentro del proyecto|
+|-|-|
+|Postman|Diseño de requests, variables y pruebas de API|
+|JavaScript|Validaciones y manejo dinámico de datos y tokens|
+|Newman|Ejecución de la colección desde línea de comandos|
+|htmlextra|Generación del reporte HTML|
+|Docker Compose|Creación temporal del ambiente AQA Playground|
+|GitHub Actions|Ejecución automática de las pruebas en la nube|
 
 ## Estrategia de pruebas
 
 La colección ejecuta un flujo completo de autenticación. Las validaciones principales comprueban:
 
-- Código de estado HTTP esperado.
-- Estructura y contenido de la respuesta.
-- Creación y reutilización dinámica de datos de prueba.
-- Obtención, renovación y uso de tokens JWT.
-- Rechazo de credenciales o tokens no válidos.
-- Comportamiento del API después del cierre de sesión.
+* Código de estado HTTP esperado.
+* Estructura y contenido de la respuesta.
+* Creación y reutilización dinámica de datos de prueba.
+* Obtención, renovación y uso de tokens JWT.
+* Rechazo de credenciales o tokens no válidos.
+* Comportamiento del API después del cierre de sesión.
 
 Las variables de ejecución se administran mediante un Environment de Postman. No se requieren credenciales reales para la ejecución en GitHub Actions.
 
@@ -48,13 +54,13 @@ Las variables de ejecución se administran mediante un Environment de Postman. N
 │   └── workflows/
 │       └── newman-ci.yml
 ├── collections/
-│   └── AQA Playground - Authentication API.postman_collection.json
+│   └── AQA Playground - Authentication API.postman\_collection.json
 ├── environments/
-│   └── AQA Playground - Local.postman_environment.json
+│   └── AQA Playground - Local.postman\_environment.json
 ├── reports/
-│   └── AQA_Playground_Authentication_Report.html
+│   └── AQA\_Playground\_Authentication\_Report.html
 ├── scripts/
-│   └── run_auth_tests.bat
+│   └── run\_auth\_tests.bat
 ├── .gitignore
 └── README.md
 ```
@@ -79,9 +85,9 @@ El workflow se ejecuta automáticamente cuando se modifican la colección, el en
 
 El historial, los pasos y los resultados pueden consultarse en [GitHub Actions](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions).
 
-- El propietario o un colaborador con permiso de escritura puede usar **Run workflow**.
-- Cualquier visitante puede revisar las ejecuciones y sus resultados.
-- Para realizar una ejecución independiente, un visitante puede hacer un **Fork**, habilitar GitHub Actions y ejecutar el workflow en su propia copia.
+* El propietario o un colaborador con permiso de escritura puede usar **Run workflow**.
+* Cualquier visitante puede revisar las ejecuciones y sus resultados.
+* Para realizar una ejecución independiente, un visitante puede hacer un **Fork**, habilitar GitHub Actions y ejecutar el workflow en su propia copia.
 
 ## Reportes
 
@@ -93,9 +99,9 @@ También se incluye un [reporte HTML de referencia](reports/AQA_Playground_Authe
 
 ### Requisitos
 
-- Docker Desktop.
-- Node.js 20 o posterior.
-- AQA Playground disponible en `http://localhost:9090`.
+* Docker Desktop.
+* Node.js 20 o posterior.
+* AQA Playground disponible en `http://localhost:9090`.
 
 Instalar Newman y el reporter:
 
@@ -106,16 +112,16 @@ npm install --global newman@6 newman-reporter-htmlextra@1
 Desde la raíz del repositorio, ejecutar:
 
 ```cmd
-scripts\run_auth_tests.bat
+scripts\\run\_auth\_tests.bat
 ```
 
 El reporte actualizado se guardará dentro de la carpeta `reports`.
 
 ## Seguridad
 
-- El workflow utiliza únicamente credenciales temporales de prueba.
-- El ambiente se elimina al finalizar cada ejecución.
-- No deben subirse contraseñas, tokens activos ni archivos `.env` con información real.
+* El workflow utiliza únicamente credenciales temporales de prueba.
+* El ambiente se elimina al finalizar cada ejecución.
+* No deben subirse contraseñas, tokens activos ni archivos `.env` con información real.
 
 ## Aplicación bajo prueba
 
@@ -126,3 +132,4 @@ Este proyecto utiliza un fork de [AQA Playground](https://github.com/sskorol/aqa
 **Luis Alvarez**  
 QA Automation Engineer  
 [GitHub](https://github.com/LuisAlvarez130594)
+
