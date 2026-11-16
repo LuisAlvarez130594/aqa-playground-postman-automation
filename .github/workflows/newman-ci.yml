@@ -107,7 +107,9 @@ jobs:
             --env-var "baseUrl=http://localhost:9090" \
             --reporters cli,htmlextra \
             --reporter-htmlextra-export "reports/AQA_Playground_API_Automation_Report.html" \
-            --reporter-htmlextra-title "AQA Playground API Automation"
+            --reporter-htmlextra-title "AQA Playground API Automation" \
+            --reporter-htmlextra-skipSensitiveData \
+            --reporter-htmlextra-timezone "America/Mexico_City"
 
       - name: Show Docker logs if tests fail
         if: failure()
