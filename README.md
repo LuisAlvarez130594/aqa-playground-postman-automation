@@ -4,7 +4,7 @@
 
 
 
-\[📊 Ver reporte HTML público](https://luisalvarez130594.github.io/aqa-playground-postman-automation/reports/AQA\_Playground\_Authentication\_Report.html)
+\[📊 Ver reporte HTML público](https://luisalvarez130594.github.io/aqa-playground-postman-automation/reports/AQA_Playground_Authentication_Report.html)
 
 
 
@@ -54,13 +54,13 @@ Las variables de ejecución se administran mediante un Environment de Postman. N
 │   └── workflows/
 │       └── newman-ci.yml
 ├── collections/
-│   └── AQA Playground - Authentication API.postman\_collection.json
+│   └── AQA Playground - Authentication API.postman_collection.json
 ├── environments/
-│   └── AQA Playground - Local.postman\_environment.json
+│   └── AQA Playground - Local.postman_environment.json
 ├── reports/
-│   └── AQA\_Playground\_Authentication\_Report.html
+│   └── AQA_Playground_Authentication_Report.html
 ├── scripts/
-│   └── run\_auth\_tests.bat
+│   └── run_auth_tests.bat
 ├── .gitignore
 └── README.md
 ```
@@ -112,7 +112,7 @@ npm install --global newman@6 newman-reporter-htmlextra@1
 Desde la raíz del repositorio, ejecutar:
 
 ```cmd
-scripts\\run\_auth\_tests.bat
+scripts\\run_auth_tests.bat
 ```
 
 El reporte actualizado se guardará dentro de la carpeta `reports`.
