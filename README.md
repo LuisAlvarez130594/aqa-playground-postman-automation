@@ -1,10 +1,10 @@
 # AQA Playground – Authentication API Automation
 
-[!\[AQA Playground - Postman API Tests](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml/badge.svg)](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml)
+[![AQA Playground - Postman API Tests](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml/badge.svg)](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml)
 
 
 
-\[📊 Ver reporte HTML público](https://luisalvarez130594.github.io/aqa-playground-postman-automation/reports/AQA_Playground_Authentication_Report.html)
+[Ver reporte HTML](https://luisalvarez130594.github.io/aqa-playground-postman-automation/reports/AQA_Playground_Authentication_Report.html)
 
 
 
