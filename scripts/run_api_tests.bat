@@ -4,17 +4,20 @@ chcp 65001 >nul
 REM Ir a la carpeta principal del proyecto
 cd /d "%~dp0\.."
 
+REM Reporte local temporal, fuera del repositorio
+set "REPORT_FILE=%TEMP%\AQA_Playground_API_Automation_Report.html"
+
 echo ==========================================
-echo AQA Playground - Authentication API Tests
+echo AQA Playground - API Automation Tests
 echo ==========================================
 echo.
 
-call newman run "collections\AQA Playground – Authentication API.postman_collection.json" ^
+call newman run "collections\AQA Playground – API Automation.postman_collection.json" ^
 -e "environments\AQA Playground - Local.postman_environment.json" ^
 -n 5 ^
 -r cli,htmlextra ^
 --reporter-htmlextra-skipSensitiveData ^
---reporter-htmlextra-export "reports\AQA_Playground_Authentication_Report.html"
+--reporter-htmlextra-export "%REPORT_FILE%"
 
 if errorlevel 1 (
     echo.
@@ -25,8 +28,8 @@ if errorlevel 1 (
 
 echo.
 echo [OK] Ejecucion completada sin fallos.
-echo [OK] Abriendo reporte HTML...
+echo [OK] Abriendo reporte HTML temporal...
 
-start "" "reports\AQA_Playground_Authentication_Report.html"
+start "" "%REPORT_FILE%"
 
 pause
