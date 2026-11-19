@@ -2,7 +2,7 @@
 
 [![AQA Playground - Postman API Tests](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml/badge.svg)](https://github.com/LuisAlvarez130594/aqa-playground-postman-automation/actions/workflows/newman-ci.yml)
 
-[Ver último reporte HTML](https://luisalvarez130594.github.io/aqa-playground-postman-automation/reports/AQA_Playground_Authentication_Report.html)
+[Ver último reporte HTML](https://luisalvarez130594.github.io/aqa-playground-postman-automation/reports/AQA_Playground_API_Automation_Report.html)
 
 Proyecto de automatización de pruebas para los módulos de autenticación y productos de [AQA Playground](https://github.com/LuisAlvarez130594/aqa-playground), implementado con Postman, ejecutado con Newman e integrado con GitHub Actions.
 
@@ -122,7 +122,7 @@ Cada ejecución automática:
 - Publica el último resultado mediante GitHub Pages.
 - Mantiene disponible el enlace público compartido en el README y LinkedIn.
 
-[Consultar el último reporte publicado](https://luisalvarez130594.github.io/aqa-playground-postman-automation/reports/AQA_Playground_Authentication_Report.html)
+[Consultar el último reporte publicado](https://luisalvarez130594.github.io/aqa-playground-postman-automation/reports/AQA_Playground_API_Automation_Report.html)
 
 ## Ejecución local en Windows
 
